@@ -1,0 +1,63 @@
+name: Build Note10 Doctor Pro v3
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "Note10DoctorV3_READY_TO_BUILD.zip"
+      - ".github/workflows/build-doctor-v3.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract source
+        run: |
+          rm -rf doctorv3
+          unzip -q Note10DoctorV3_READY_TO_BUILD.zip
+          cp -R Note10Optimizer/. ./doctorv3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK 35
+        run: |
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null || true
+          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build APK
+        working-directory: doctorv3
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: gradle --no-daemon clean assembleDebug
+
+      - name: Verify and rename APK
+        run: |
+          test -f doctorv3/app/build/outputs/apk/debug/app-debug.apk
+          cp doctorv3/app/build/outputs/apk/debug/app-debug.apk JESUSDROIDL-Note10-Doctor-Pro-v3.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JESUSDROIDL-Note10-Doctor-Pro-v3-APK
+          path: JESUSDROIDL-Note10-Doctor-Pro-v3.apk
+          if-no-files-found: error
+          retention-days: 30
