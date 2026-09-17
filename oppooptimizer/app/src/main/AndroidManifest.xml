@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
+    <queries>
+        <package android:name="com.mobileposse.client.moment"/><package android:name="com.easybrain.arrow.puzzle3d"/><package android:name="com.rbt.android"/><package android:name="com.telcel.imk"/><package android:name="com.clarodrive.android"/><package android:name="com.dla.android"/><package android:name="com.americamovil.claroshop"/><package android:name="com.coloros.musiclink"/><package android:name="com.google.android.videos"/><package android:name="com.handmark.expressweather"/><package android:name="com.oplus.member"/><package android:name="com.jesusdroidl.oppoa79diagnostic"/>
+    </queries>
+    <application android:allowBackup="false" android:label="JESUSDROIDL OPPO Optimizer" android:supportsRtl="true" android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity" android:screenOrientation="portrait" android:exported="true">
+            <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+        </activity>
+    </application>
+</manifest>
