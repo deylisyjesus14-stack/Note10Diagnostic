@@ -1,0 +1,41 @@
+name: Build OPPO A79 Diagnostic APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "oppodiag/**"
+      - ".github/workflows/build-oppo-a79-diagnostic.yml"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK 35
+        run: |
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null || true
+          /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build APK
+        working-directory: oppodiag
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: gradle --no-daemon clean assembleDebug
+      - name: Prepare APK
+        run: cp oppodiag/app/build/outputs/apk/debug/app-debug.apk JESUSDROIDL-OPPO-A79-Diagnostic.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JESUSDROIDL-OPPO-A79-Diagnostic-APK
+          path: JESUSDROIDL-OPPO-A79-Diagnostic.apk
+          retention-days: 30
